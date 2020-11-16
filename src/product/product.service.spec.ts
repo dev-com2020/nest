@@ -51,7 +51,32 @@ describe('ProductService', () => {
     const result = await productService.getProducts();
     expect(productRepository.find).toHaveBeenCalled();
     expect(result).toEqual('someProduct');
+    });
+  });
+    describe('getProduct', () => {
+      it('powinien zwrócić produkt o podanym ID', async () =>{
+      const mockProduct = {
+      name: 'sample name',
+      description: 'jakiś opis',
+      price: '123',
+      };
+      productRepository.findOne.mockResolvedValue(mockProduct);
+      const result = await productService.getProduct(1);
+      expect(result).toEqual(mockProduct);
+      expect(productRepository.findOne).toHaveBeenCalledWith(1);
+  });
+  it('błąd, nie znaleziono podanego ID',()=>{
+    productRepository.findOne.mockResolvedValue(null);
+    expect(productService.getProduct(1)).rejects.toThrow(NotFoundException);
   });
   });
+  describe('deleteProduct', () => {
+    it('powinien usunąć produkt', async () =>{
+    productRepository.delete.mockResolvedValue(1);
+    expect(productRepository.delete).not.toHaveBeenCalled();
+    await productService.deleteProduct(1);
+    expect(productRepository.delete).toHaveBeenCalledWith(1);
+    
+    });
 });
-
+  });
